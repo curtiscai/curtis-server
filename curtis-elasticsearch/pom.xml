@@ -9,19 +9,29 @@
     <name>curtis-elasticsearch</name>
     <description>ElasticSearch相关API使用示例</description>
 
+<!--    <parent>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-starter-parent</artifactId>-->
+<!--        <version>2.4.5</version>-->
+<!--        <relativePath/>-->
+<!--    </parent>-->
+
     <properties>
         <java.version>1.8</java.version>
 
         <!-- springboot版本 Apr 15, 2021 -->
         <spring-boot-starter.version>2.4.5</spring-boot-starter.version>
+
+        <!-- 只有使用parent标签引入springboot依赖的方式才可以使用该方式覆盖ES客户端版本 -->
+<!--        <elasticsearch.version>7.11.2</elasticsearch.version>-->
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-parent</artifactId>
-                <version>${spring-boot-starter.version}</version>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.4.5</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -35,10 +45,21 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- spring-boot-starter-data-elasticsearch 2.4.5 中ES客户端版本是7.9.3 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
             <exclusions>
                 <exclusion>
                     <groupId>org.junit.vintage</groupId>
@@ -47,23 +68,13 @@
             </exclusions>
         </dependency>
 
-        <!-- 截至到2021.5 ES7 最新版本 (Apr 27, 2021) -->
-        <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>7.12.1</version>
-        </dependency>
-
-
-        <!-- 截至到2021.5 ES7 最新版本 (Oct 22, 2020) -->
-        <!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client (Apr 27, 2021) -->
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.12.1</version>
-        </dependency>
-
+        <!-- 显示引入elasticsearch-rest-high-level-client依赖来覆盖默认的依赖 -->
+        <!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client (Mar 10, 2021) -->
+<!--        <dependency>-->
+<!--            <groupId>org.elasticsearch.client</groupId>-->
+<!--            <artifactId>elasticsearch-rest-high-level-client</artifactId>-->
+<!--            <version>7.11.2</version>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava (Mar 19, 2021) -->
         <dependency>
@@ -84,6 +95,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>

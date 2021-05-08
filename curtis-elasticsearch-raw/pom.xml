@@ -16,12 +16,47 @@
 
     <!-- 以下依赖除Junit外均是2021.5的最新版本 -->
     <dependencies>
-        <!-- 截至到2021.5 ES7 最新版本 (Apr 27, 2021) -->
-        <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
+
+        <!-- 显示引入elasticsearch-rest-high-level-client依赖来覆盖默认的依赖 -->
+        <!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client (Mar 10, 2021) -->
         <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>7.12.1</version>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.11.2</version>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+
+
+        <!-- 日志相关依赖(截至到2021.5最新依赖) -->
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api (Dec 16, 2019) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl (Mar 12, 2021) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.14.1</version>
+            <!--            <scope>test</scope>-->
+        </dependency>
+
+
+        <!-- 谷歌相关实用工具依赖(截至到2021.5最新依赖) (Oct 04, 2019) -->
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava (Mar 19, 2021) -->
@@ -31,11 +66,14 @@
             <version>30.1.1-jre</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind (Apr 12, 2021) -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.3</version>
         </dependency>
+
+
     </dependencies>
 
     <build>

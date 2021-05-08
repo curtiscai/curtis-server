@@ -5,7 +5,7 @@
     <groupId>com.curtis</groupId>
     <artifactId>curtis-server</artifactId>
     <version>0.0.1</version>
-    <name>curtis-project</name>
+    <name>curtis-server</name>
     <description>演示各类中间件的使用示例</description>
 
 </project>
