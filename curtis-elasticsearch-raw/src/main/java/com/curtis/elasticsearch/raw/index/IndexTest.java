@@ -81,7 +81,7 @@ public class IndexTest {
      * <p>
      * curl --location --request PUT 'http://node101:9200/idx_test' \
      * --header 'Content-Type: application/json' \
-     * --data-raw '{"mappings":{"properties":{"name":{"type":"keyword"},"sex":{"type":"boolean"},"birth":{"type":"date"},"phone":{"type":"long"},"height":{"type":"scaled_float","scaling_factor":100},"desc":{"type":"text"}}}}'
+     * --data-raw '{"settings":{"number_of_shards":1,"number_of_replicas":1},"mappings":{"properties":{"name":{"type":"keyword"},"sex":{"type":"boolean"},"birth":{"type":"date"},"phone":{"type":"long"},"height":{"type":"scaled_float","scaling_factor":100},"desc":{"type":"text"}}}}'
      */
     @Test
     public void testCreateIndexWithMapping() {
@@ -94,8 +94,12 @@ public class IndexTest {
         // 2. 执行操作
         // 获取RestHighLevelClient的用于专门处理索引的封装对象IndicesClient
         IndicesClient indicesClient = restHighLevelClient.indices();
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest("idx_test");
-        String mappings = "{\"mappings\":{\"properties\":{\"name\":{\"type\":\"keyword\"},\"sex\":{\"type\":\"boolean\"},\"birth\":{\"type\":\"date\"},\"phone\":{\"type\":\"long\"},\"height\":{\"type\":\"scaled_float\",\"scaling_factor\":100},\"desc\":{\"type\":\"text\"}}}}";
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest("idx_test_1");
+
+        String settings = "{\"number_of_shards\":1,\"number_of_replicas\":1}";
+        createIndexRequest.settings(settings, XContentType.JSON);
+
+        String mappings = "{\"properties\":{\"name\":{\"type\":\"keyword\"},\"sex\":{\"type\":\"boolean\"},\"birth\":{\"type\":\"date\"},\"phone\":{\"type\":\"long\"},\"height\":{\"type\":\"scaled_float\",\"scaling_factor\":100},\"desc\":{\"type\":\"text\"}}}";
         createIndexRequest.mapping(mappings, XContentType.JSON);
         try {
             CreateIndexResponse createIndexResponse = indicesClient.create(createIndexRequest, RequestOptions.DEFAULT);

@@ -710,6 +710,68 @@ public class DocComplexSearchTest {
     }
 
     /**
+     * 查询文档 - 前缀匹配
+     * <p>
+     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * --header 'Content-Type: application/json' \
+     * --data-raw '{"query":{"bool":{"must":[{"match_phrase_prefix":{"desc":"我是北"}}]}},"from":0,"size":8,"_source":["name","phone","height","sex","desc"],"sort":[{"sex":{"order":"desc"}},{"phone":{"order":"desc"}}]}'
+     */
+    @Test
+    public void testFullTextSearchWithMatchPhrasePrefixDoc() {
+        // 1. 创建RestHighLevelClient客户端
+        // HttpHost[] hosts = new HttpHost[1];
+        HttpHost httpHost = new HttpHost(HOST_NAME, PORT);
+        RestClientBuilder restClientBuilder = RestClient.builder(httpHost);
+        RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
+
+        // 2. 执行操作
+        SearchRequest searchRequest = new SearchRequest("idx_test");
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .query(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchPhraseQuery("desc", "我是河"))
+                      )
+                .fetchSource(new String[]{"name", "phone", "height", "sex", "desc"}, null)
+                .from(0)
+                .size(8)
+                .sort("sex", SortOrder.ASC)
+                .sort("height", SortOrder.DESC);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // the response is : OK
+            LOGGER.info("the response is : {}", searchResponse.status());
+            // the response is : 3ms
+            LOGGER.info("the response is : {}", searchResponse.getTook());
+
+            SearchHits searchHits = searchResponse.getHits();
+
+            // 获取搜索结果总数
+            TotalHits totalHits = searchHits.getTotalHits();
+            // the response is : 5
+            LOGGER.info("the response is : {}", totalHits.value);
+
+            // 遍历搜索结果并输出
+            SearchHit[] searchHitsHitArray = searchHits.getHits();
+            for (SearchHit searchHit : searchHitsHitArray) {
+                /*
+[2021-05-09 21:57:27.431] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
+                 */
+                LOGGER.info("the response is : {}", searchHit.getSourceAsString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3. 关闭客户端
+        try {
+            restHighLevelClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 查询文档 - 模糊查询
      * <p>
      */
@@ -751,6 +813,122 @@ public class DocComplexSearchTest {
             for (SearchHit searchHit : searchHitsHitArray) {
                 /*
 [2021-05-08 22:54:13.177] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
+                 */
+                LOGGER.info("the response is : {}", searchHit.getSourceAsString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3. 关闭客户端
+        try {
+            restHighLevelClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 查询文档 - 多字段查询
+     * <p>
+     *
+     */
+    @Test
+    public void testFullTextSearchWithMultiFieldDoc() {
+        // 1. 创建RestHighLevelClient客户端
+        // HttpHost[] hosts = new HttpHost[1];
+        HttpHost httpHost = new HttpHost(HOST_NAME, PORT);
+        RestClientBuilder restClientBuilder = RestClient.builder(httpHost);
+        RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
+
+        // 2. 执行操作
+        SearchRequest searchRequest = new SearchRequest("idx_test");
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .query(QueryBuilders.multiMatchQuery("河北", "desc","name"))
+                .fetchSource(new String[]{"name", "phone", "height", "sex", "desc"}, null)
+                .from(0)
+                .size(10)
+                .sort("sex", SortOrder.ASC)
+                .sort("height", SortOrder.DESC);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // the response is : OK
+            LOGGER.info("the response is : {}", searchResponse.status());
+            // the response is : 3ms
+            LOGGER.info("the response is : {}", searchResponse.getTook());
+
+            SearchHits searchHits = searchResponse.getHits();
+
+            // 获取搜索结果总数
+            TotalHits totalHits = searchHits.getTotalHits();
+            // the response is : 5
+            LOGGER.info("the response is : {}", totalHits.value);
+
+            // 遍历搜索结果并输出
+            SearchHit[] searchHitsHitArray = searchHits.getHits();
+            for (SearchHit searchHit : searchHitsHitArray) {
+                /*
+[2021-05-09 21:20:20.823] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010002,"sex":false,"name":"curtis2","height":182.1,"desc":"我是北京人"}
+[2021-05-09 21:20:20.823] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
+                 */
+                LOGGER.info("the response is : {}", searchHit.getSourceAsString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3. 关闭客户端
+        try {
+            restHighLevelClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 查询文档 - 查询多个文档
+     * <p>
+     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * --header 'Content-Type: application/json' \
+     * --data-raw '{"query":{"ids":{"values":[1,2]}},"_source":["name","phone","height","sex","desc"]}'
+     */
+    @Test
+    public void testGetDocByIds() {
+        // 1. 创建RestHighLevelClient客户端
+        // HttpHost[] hosts = new HttpHost[1];
+        HttpHost httpHost = new HttpHost(HOST_NAME, PORT);
+        RestClientBuilder restClientBuilder = RestClient.builder(httpHost);
+        RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
+
+        // 2. 执行操作
+        SearchRequest searchRequest = new SearchRequest("idx_test");
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .query(QueryBuilders.idsQuery().addIds("1","2"))
+                .fetchSource(new String[]{"name", "phone", "height", "sex", "desc"}, null);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // the response is : OK
+            LOGGER.info("the response is : {}", searchResponse.status());
+            // the response is : 3ms
+            LOGGER.info("the response is : {}", searchResponse.getTook());
+
+            SearchHits searchHits = searchResponse.getHits();
+
+            // 获取搜索结果总数
+            TotalHits totalHits = searchHits.getTotalHits();
+            // the response is : 5
+            LOGGER.info("the response is : {}", totalHits.value);
+
+            // 遍历搜索结果并输出
+            SearchHit[] searchHitsHitArray = searchHits.getHits();
+            for (SearchHit searchHit : searchHitsHitArray) {
+                /*
+[2021-05-09 21:32:13.195] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
+[2021-05-09 21:32:13.195] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010002,"sex":false,"name":"curtis2","height":182.1,"desc":"我是北京人"}
                  */
                 LOGGER.info("the response is : {}", searchHit.getSourceAsString());
             }
