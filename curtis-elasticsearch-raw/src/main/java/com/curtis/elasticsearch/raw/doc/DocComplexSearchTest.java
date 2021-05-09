@@ -14,6 +14,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -30,12 +31,12 @@ import java.util.List;
 
 /**
  * @author curtis.cai
- * @desc 文档批量复杂操作
+ * @desc 查询文档 - 复杂查询
  * @date 2021-05-08
  * @email curtis.cai@outlook.com
  * @reference
  */
-public class DocSearchTest {
+public class DocComplexSearchTest {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocBulkTest.class);
@@ -582,14 +583,14 @@ public class DocSearchTest {
     }
 
     /**
-     * 查询文档 - 全文检索不分词匹配
+     * 查询文档 - 全文检索 - 分词后全文检索
      * <p>
      * curl --location --request POST 'http://node101:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
-     * --data-raw '{"query":{"range":{"height":{"gte":183.1,"lte":187.1}}},"from":0,"size":8,"_source":["name","phone","height","sex"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
+     * --data-raw '{"query":{"match":{"desc":"我是河"}},"from":0,"size":8,"_source":["name","phone","height","sex","desc"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
     @Test
-    public void testFullTextSearchDoc() {
+    public void testFullTextSearchWithMatchDoc() {
         // 1. 创建RestHighLevelClient客户端
         // HttpHost[] hosts = new HttpHost[1];
         HttpHost httpHost = new HttpHost(HOST_NAME, PORT);
@@ -599,13 +600,77 @@ public class DocSearchTest {
         // 2. 执行操作
         SearchRequest searchRequest = new SearchRequest("idx_test");
         SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
-                .query(QueryBuilders.rangeQuery("height")
-                        .gte(183.1)
-                        .lte(187.1)
-                )
-                .fetchSource(new String[]{"name", "phone", "height", "sex"}, null)
+                .query(QueryBuilders.matchQuery("desc", "我是河"))
+                .fetchSource(new String[]{"name", "phone", "height", "sex", "desc"}, null)
                 .from(0)
-                .size(8)
+                .size(10)
+                .sort("sex", SortOrder.ASC)
+                .sort("height", SortOrder.DESC);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // the response is : OK
+            LOGGER.info("the response is : {}", searchResponse.status());
+            // the response is : 3ms
+            LOGGER.info("the response is : {}", searchResponse.getTook());
+
+            SearchHits searchHits = searchResponse.getHits();
+
+            // 获取搜索结果总数
+            TotalHits totalHits = searchHits.getTotalHits();
+            // the response is : 8
+            LOGGER.info("the response is : {}", totalHits.value);
+
+            // 遍历搜索结果并输出
+            SearchHit[] searchHitsHitArray = searchHits.getHits();
+            for (SearchHit searchHit : searchHitsHitArray) {
+                /*
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010008,"sex":false,"name":"curtis8","height":188.1,"desc":"我会Spring也会Redis"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010006,"sex":false,"name":"curtis6","height":186.1,"desc":"Spring是最好的框架"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010004,"sex":false,"name":"curtis4","height":184.1,"desc":"我是上海人"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010002,"sex":false,"name":"curtis2","height":182.1,"desc":"我是北京人"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010007,"sex":true,"name":"curtis7","height":187.1,"desc":"MyBatis是最好的框架"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010005,"sex":true,"name":"curtis5","height":185.1,"desc":"我是湖南人"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010003,"sex":true,"name":"curtis3","height":183.1,"desc":"我是天津人"}
+[2021-05-08 22:54:47.936] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
+                 */
+                LOGGER.info("the response is : {}", searchHit.getSourceAsString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3. 关闭客户端
+        try {
+            restHighLevelClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 查询文档 - 全文检索 - 不分词全文检索（必须完整包含）
+     * <p>
+     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * --header 'Content-Type: application/json' \
+     * --data-raw '{"query":{"match_phrase":{"desc":"我是河"}},"from":0,"size":8,"_source":["name","phone","height","sex","desc"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
+     */
+    @Test
+    public void testFullTextSearchWithMatchPhraseDoc() {
+        // 1. 创建RestHighLevelClient客户端
+        // HttpHost[] hosts = new HttpHost[1];
+        HttpHost httpHost = new HttpHost(HOST_NAME, PORT);
+        RestClientBuilder restClientBuilder = RestClient.builder(httpHost);
+        RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
+
+        // 2. 执行操作
+        SearchRequest searchRequest = new SearchRequest("idx_test");
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .query(QueryBuilders.matchPhraseQuery("desc", "我是河"))
+                .fetchSource(new String[]{"name", "phone", "height", "sex", "desc"}, null)
+                .from(0)
+                .size(10)
                 .sort("sex", SortOrder.ASC)
                 .sort("height", SortOrder.DESC);
         searchRequest.source(searchSourceBuilder);
@@ -628,11 +693,64 @@ public class DocSearchTest {
             SearchHit[] searchHitsHitArray = searchHits.getHits();
             for (SearchHit searchHit : searchHitsHitArray) {
                 /*
-[2021-05-08 21:40:36.671] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010006,"sex":false,"name":"curtis6","height":186.1}
-[2021-05-08 21:40:36.671] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010004,"sex":false,"name":"curtis4","height":184.1}
-[2021-05-08 21:40:36.671] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010007,"sex":true,"name":"curtis7","height":187.1}
-[2021-05-08 21:40:36.671] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010005,"sex":true,"name":"curtis5","height":185.1}
-[2021-05-08 21:40:36.671] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010003,"sex":true,"name":"curtis3","height":183.1}
+[2021-05-08 22:54:13.177] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
+                 */
+                LOGGER.info("the response is : {}", searchHit.getSourceAsString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3. 关闭客户端
+        try {
+            restHighLevelClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 查询文档 - 模糊查询
+     * <p>
+     */
+    @Test
+    public void testFullTextSearchWithFuzzyPhraseDoc() {
+        // 1. 创建RestHighLevelClient客户端
+        // HttpHost[] hosts = new HttpHost[1];
+        HttpHost httpHost = new HttpHost(HOST_NAME, PORT);
+        RestClientBuilder restClientBuilder = RestClient.builder(httpHost);
+        RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
+
+        // 2. 执行操作
+        SearchRequest searchRequest = new SearchRequest("idx_test");
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .query(QueryBuilders.fuzzyQuery("desc", "我是海").fuzziness(Fuzziness.TWO))
+                .fetchSource(new String[]{"name", "phone", "height", "sex", "desc"}, null)
+                .from(0)
+                .size(10)
+                .sort("sex", SortOrder.ASC)
+                .sort("height", SortOrder.DESC);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // the response is : OK
+            LOGGER.info("the response is : {}", searchResponse.status());
+            // the response is : 3ms
+            LOGGER.info("the response is : {}", searchResponse.getTook());
+
+            SearchHits searchHits = searchResponse.getHits();
+
+            // 获取搜索结果总数
+            TotalHits totalHits = searchHits.getTotalHits();
+            // the response is : 5
+            LOGGER.info("the response is : {}", totalHits.value);
+
+            // 遍历搜索结果并输出
+            SearchHit[] searchHitsHitArray = searchHits.getHits();
+            for (SearchHit searchHit : searchHitsHitArray) {
+                /*
+[2021-05-08 22:54:13.177] [INFO] - [main] com.curtis.elasticsearch.raw.doc.DocBulkTest - the response is : {"phone":17600010001,"sex":true,"name":"curtis1","height":181.1,"desc":"我是河北人"}
                  */
                 LOGGER.info("the response is : {}", searchHit.getSourceAsString());
             }
