@@ -21,6 +21,8 @@ public class User {
 
     private BigDecimal height;
 
+    private String cityName;
+
     private String desc;
 
     public User() {
@@ -32,6 +34,16 @@ public class User {
         this.birth = birth;
         this.phone = phone;
         this.height = height;
+        this.desc = desc;
+    }
+
+    public User(String name, Boolean sex, String birth, Long phone, BigDecimal height, String cityName, String desc) {
+        this.name = name;
+        this.sex = sex;
+        this.birth = birth;
+        this.phone = phone;
+        this.height = height;
+        this.cityName = cityName;
         this.desc = desc;
     }
 
@@ -75,6 +87,14 @@ public class User {
         this.height = height;
     }
 
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
     public String getDesc() {
         return desc;
     }
@@ -88,9 +108,10 @@ public class User {
         return "User{" +
                 "name='" + name + '\'' +
                 ", sex=" + sex +
-                ", birth=" + birth +
+                ", birth='" + birth + '\'' +
                 ", phone=" + phone +
                 ", height=" + height +
+                ", cityName='" + cityName + '\'' +
                 ", desc='" + desc + '\'' +
                 '}';
     }

@@ -5,16 +5,20 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.apache.http.HttpHost;
 import org.apache.lucene.search.TotalHits;
+import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.*;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -60,7 +64,48 @@ public class DocAggregationSearchTest {
         RestClientBuilder restClientBuilder = RestClient.builder(httpHost);
         RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
 
-        // 2. 执行操作
+
+        // 获取RestHighLevelClient的用于专门处理索引的封装对象IndicesClient
+        IndicesClient indicesClient = restHighLevelClient.indices();
+
+        // 2. 如果索引存在则删除
+        GetIndexRequest getIndexRequest = new GetIndexRequest("idx_test");
+        try {
+            boolean exists = indicesClient.exists(getIndexRequest, RequestOptions.DEFAULT);
+            if (exists) {
+                DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest("idx_test");
+                AcknowledgedResponse acknowledgedResponse = indicesClient.delete(deleteIndexRequest, RequestOptions.DEFAULT);
+                // the response is : {"acknowledged":true,"fragment":false}
+                LOGGER.info("the response is : {}", new Gson().toJson(acknowledgedResponse));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3. 创建索引
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest("idx_test");
+
+        String settings = "{\"number_of_shards\":1,\"number_of_replicas\":1}";
+        createIndexRequest.settings(settings, XContentType.JSON);
+
+        String mappings = "{\"properties\":{\"name\":{\"type\":\"keyword\"},\"sex\":{\"type\":\"boolean\"},\"birth\":{\"type\":\"date\"},\"phone\":{\"type\":\"long\"},\"height\":{\"type\":\"scaled_float\",\"scaling_factor\":100},\"cityName\":{\"type\":\"keyword\"},\"desc\":{\"type\":\"text\"}}}";
+        createIndexRequest.mapping(mappings, XContentType.JSON);
+        try {
+            CreateIndexResponse createIndexResponse = indicesClient.create(createIndexRequest, RequestOptions.DEFAULT);
+            // the response is : {"index":"idx_test","shardsAcknowledged":true,"acknowledged":true}
+            LOGGER.info("the response is : {}", new Gson().toJson(createIndexResponse));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ElasticsearchStatusException e) {
+            // 重复创建索引将抛出ElasticsearchStatusException异常，其中RestStatus是错误信息枚举类
+            RestStatus restStatus = e.status();
+            // the response is : BAD_REQUEST
+            LOGGER.info("the response is : {}", restStatus);
+            // the response is : Elasticsearch exception [type=resource_already_exists_exception, reason=index [idx_test/6oyDRGiyQ7-gEwd8t4KkYA] already exists]
+            LOGGER.info("the response is : {}", e.getLocalizedMessage());
+        }
+
+        // 4. 批量创建索引数据
         List<User> userList = Lists.newArrayList();
         for (int i = 1; i <= 10; i++) {
             // 保证数据是从1到10循环
@@ -69,8 +114,9 @@ public class DocAggregationSearchTest {
             String factorStr = i % 10 == 0 ? "10" : "0" + (i % 10);
             String[] descArray = {"我是河北人", "我是北京人", "我是天津人", "我是上海人", "我是湖南人", "Spring是最好的框架", "MyBatis是最好的框架",
                     "我会Spring也会Redis", "Java", "C++"};
+            String[] cityNameArray = {"北京", "石家庄", "天津"};
             userList.add(new User("curtis" + i, i % 2 != 0, "1990-01-" + factorStr, 17600010000L + factor,
-                    BigDecimal.valueOf(180.1 + factor), descArray[i - 1]));
+                    BigDecimal.valueOf(180.1 + factor), cityNameArray[i % 3], descArray[i - 1]));
         }
 
         BulkRequest bulkRequest = new BulkRequest();
