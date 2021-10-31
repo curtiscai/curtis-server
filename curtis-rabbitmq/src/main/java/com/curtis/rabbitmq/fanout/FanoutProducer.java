@@ -1,4 +1,4 @@
-package com.curtis.rabbitmq.basic;
+package com.curtis.rabbitmq.fanout;
 
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +13,15 @@ import org.springframework.stereotype.Component;
  * @reference
  */
 @Component
-public class RabbitMQProducer {
+public class FanoutProducer {
 
     @Autowired
     private AmqpTemplate amqpTemplate;
 
-    @Value("${mq.queue.name}")
-    private String queueName;
-
+    @Value("${mq.config.exchange.fanout}")
+    private String exchangeName;
 
     public void send(String msg) {
-        amqpTemplate.convertAndSend(queueName, msg);
+        amqpTemplate.convertAndSend(exchangeName,"", msg);
     }
-
 }

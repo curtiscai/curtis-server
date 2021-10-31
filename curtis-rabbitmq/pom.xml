@@ -12,8 +12,8 @@
     <properties>
         <java.version>1.8</java.version>
 
-        <!-- springboot版本 Apr 15, 2021 -->
-        <spring-boot-starter.version>2.4.5</spring-boot-starter.version>
+        <!-- springboot版本 (Sep 23, 2021) -->
+        <spring-boot-starter.version>2.5.5</spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -47,19 +47,26 @@
             </exclusions>
         </dependency>
 
-        <!-- 截至到2021.5 AMQP Client 最新版本 (Apr 09, 2021) -->
-        <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
         <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.12.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava (Mar 19, 2021) -->
+
+        <!-- 截至到2021.11 AMQP Client 最新版本 (Aug 30, 2021) -->
+        <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
+<!--        <dependency>-->
+<!--            <groupId>com.rabbitmq</groupId>-->
+<!--            <artifactId>amqp-client</artifactId>-->
+<!--            <version>5.13.1</version>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava (Sep 27, 2021) -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.1.1-jre</version>
+            <version>31.0.1-jre</version>
         </dependency>
 
         <dependency>
