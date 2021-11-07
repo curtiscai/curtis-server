@@ -38,6 +38,7 @@ public class DeclareExchangeTest {
 
         // 3. 从连接中获取通道Channel对象
         Channel channel = connection.createChannel();
+        Assert.assertNotNull(channel);
 
         // 4. 声明交换机
         // 创建非自动删除、非持久化的交换机（直连、主题、广播），MQ重启交换机丢失
