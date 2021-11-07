@@ -24,7 +24,7 @@ public class ProviderWithDirectTest {
         // 创建连接MQ的连接工厂对象
         ConnectionFactory connectionFactory = new ConnectionFactory();
         // 设置连接MQ的主机
-        connectionFactory.setHost("node101");
+        connectionFactory.setHost("node100");
         // 设置连接MQ的端口
         connectionFactory.setPort(5672);
         // 设置连接的虚拟主机

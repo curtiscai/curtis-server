@@ -45,7 +45,7 @@ public class DocTest {
     /**
      * 创建文档 - 不指定id
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_doc' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_doc' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"name":"curtis1","sex":true,"birth":"1990-01-01","phone":"17600010001","height":180.1,"desc":"我是中国人"}'
      */
@@ -88,7 +88,7 @@ public class DocTest {
     /**
      * 创建文档 - 指定id
      * <p>
-     * curl --location --request PUT 'http://node101:9200/idx_test/_doc/1' \
+     * curl --location --request PUT 'http://node100:9200/idx_test/_doc/1' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"name":"curtis1","sex":true,"birth":"1990-01-01","phone":"17600010001","height":180.1,"desc":"我是中国人"}'
      */
@@ -131,7 +131,7 @@ public class DocTest {
     /**
      * 查询指定文档
      * <p>
-     * curl --location --request GET 'http://node101:9200/idx_test/_doc/3'
+     * curl --location --request GET 'http://node100:9200/idx_test/_doc/3'
      */
     @Test
     public void testGetDocById() {
@@ -165,7 +165,7 @@ public class DocTest {
     /**
      * 修改文档 - 全量修改(与创建文档同方法)
      * <p>
-     * curl --location --request PUT 'http://node101:9200/idx_test/_doc/1' \
+     * curl --location --request PUT 'http://node100:9200/idx_test/_doc/1' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"name":"curtis1","sex":true,"birth":"1990-01-01","phone":"17600010001","height":180.1,"desc":"我是中国人"}'
      */
@@ -208,7 +208,7 @@ public class DocTest {
     /**
      * 修改文档 - 局部修改(非空字段才会更新)
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_update/1' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_update/1' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"doc":{"name":"curtis101"}}'
      */
@@ -249,7 +249,7 @@ public class DocTest {
     /**
      * 删除指定文档
      * <p>
-     * curl --location --request DELETE 'http://node101:9200/idx_test/_doc/3'
+     * curl --location --request DELETE 'http://node100:9200/idx_test/_doc/3'
      */
     @Test
     public void testDeleteDocById() {

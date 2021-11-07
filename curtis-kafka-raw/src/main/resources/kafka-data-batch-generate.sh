@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # 如果主题存在则先删除主题
-# kafka-topics.sh --delete --bootstrap-server node101:9092 --topic topic-001
+# kafka-topics.sh --delete --bootstrap-server node100:9092 --topic topic-001
 
 # 响应Ctrl+C中断
 trap 'onCtrlC' INT
@@ -13,7 +13,7 @@ function onCtrlC () {
 # kafka所在目录
 kafka_path=/opt/app/kafka
 # broker
-broker_list=node101:9092,node102:9092,node103:9092
+broker_list=node100:9092,node102:9092,node103:9092
 # kafka的topic
 topic=topic-001
 # 消息总数

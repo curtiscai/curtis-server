@@ -39,7 +39,7 @@ public class IndexTest {
     /**
      * 创建索引 - 不指定mapping
      * <p>
-     * curl --location --request PUT 'http://node101:9200/idx_test'
+     * curl --location --request PUT 'http://node100:9200/idx_test'
      */
     @Test
     public void testCreateIndexWithoutMapping() {
@@ -79,7 +79,7 @@ public class IndexTest {
     /**
      * 创建索引 - 指定mapping
      * <p>
-     * curl --location --request PUT 'http://node101:9200/idx_test' \
+     * curl --location --request PUT 'http://node100:9200/idx_test' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"settings":{"number_of_shards":1,"number_of_replicas":1},"mappings":{"properties":{"name":{"type":"keyword"},"sex":{"type":"boolean"},"birth":{"type":"date"},"phone":{"type":"long"},"height":{"type":"scaled_float","scaling_factor":100},"desc":{"type":"text"}}}}'
      */
@@ -127,7 +127,7 @@ public class IndexTest {
     /**
      * 查询指定索引
      * <p>
-     * curl --location --request GET 'http://node101:9200/idx_test'
+     * curl --location --request GET 'http://node100:9200/idx_test'
      */
     @Test
     public void testQueryIndex() {
@@ -168,7 +168,7 @@ public class IndexTest {
     /**
      * 查看索引是否存在
      * <p>
-     * curl --location --head 'http://node101:9200/idx_test'
+     * curl --location --head 'http://node100:9200/idx_test'
      */
     @Test
     public void testExistsIndex() {
@@ -202,7 +202,7 @@ public class IndexTest {
     /**
      * 删除指定索引
      * <p>
-     * curl --location --request DELETE 'http://node101:9200/idx_test'
+     * curl --location --request DELETE 'http://node100:9200/idx_test'
      */
     @Test
     public void testDeleteIndex() {

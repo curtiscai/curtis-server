@@ -150,7 +150,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 使用请求体 - 单条件
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"match":{"sex":"true"}}}'
      */
@@ -203,7 +203,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 过滤字段
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"match":{"sex":"true"}},"_source":["name","phone"]}'
      */
@@ -263,7 +263,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 分页查询
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"match":{"sex":"true"}},"_source":["name","phone"],"from":0,"size":2}'
      */
@@ -322,7 +322,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 查询排序
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"match_all":{}},"from":0,"size":8,"_source":["name","phone","height","sex"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
@@ -389,7 +389,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 复合查询 - AND
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"bool":{"must":[{"term":{"sex":"true"}},{"term":{"phone":17600010001}}]}},"from":0,"size":8,"_source":["name","phone","height","sex"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
@@ -451,7 +451,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 复合查询 - OR
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"bool":{"should":[{"term":{"sex":"true"}},{"term":{"phone":17600010002}}]}},"from":0,"size":8,"_source":["name","phone","height","sex"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
@@ -518,7 +518,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 范围查询
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"range":{"height":{"gte":183.1,"lte":187.1}}},"from":0,"size":8,"_source":["name","phone","height","sex"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
@@ -585,7 +585,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 全文检索 - 分词后全文检索
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"match":{"desc":"我是河"}},"from":0,"size":8,"_source":["name","phone","height","sex","desc"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
@@ -652,7 +652,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 全文检索 - 不分词全文检索（必须完整包含）
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"match_phrase":{"desc":"我是河"}},"from":0,"size":8,"_source":["name","phone","height","sex","desc"],"sort":[{"sex":{"order":"asc"}},{"height":{"order":"desc"}}]}'
      */
@@ -712,7 +712,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 前缀匹配
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"bool":{"must":[{"match_phrase_prefix":{"desc":"我是北"}}]}},"from":0,"size":8,"_source":["name","phone","height","sex","desc"],"sort":[{"sex":{"order":"desc"}},{"phone":{"order":"desc"}}]}'
      */
@@ -890,7 +890,7 @@ public class DocComplexSearchTest {
     /**
      * 查询文档 - 查询多个文档
      * <p>
-     * curl --location --request POST 'http://node101:9200/idx_test/_search' \
+     * curl --location --request POST 'http://node100:9200/idx_test/_search' \
      * --header 'Content-Type: application/json' \
      * --data-raw '{"query":{"ids":{"values":[1,2]}},"_source":["name","phone","height","sex","desc"]}'
      */

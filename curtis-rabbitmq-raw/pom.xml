@@ -17,13 +17,14 @@
   <!-- 以下依赖除Junit外均是2021.5的最新版本 -->
   <dependencies>
 
-    <!-- 截至到2021.5 AMQP Client 最新版本 (Apr 09, 2021) -->
+    <!-- 截至到2021.11 AMQP Client 最新版本 (Aug 30, 2021) -->
     <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
     <dependency>
       <groupId>com.rabbitmq</groupId>
       <artifactId>amqp-client</artifactId>
-      <version>5.12.0</version>
+      <version>5.13.1</version>
     </dependency>
+
 
     <!-- https://mvnrepository.com/artifact/com.google.guava/guava (Mar 19, 2021) -->
     <dependency>
