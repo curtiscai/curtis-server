@@ -61,19 +61,19 @@ public class RabbitMQConsumeMsgTest {
         // 4.3 使用路由键绑定交换机和队列
         channel.queueBind(queueName, exchangeName, routingKey);
 
-        // 5. 发送消息
-        // 5.1 发送不持久化的消息(默认消息是不持久化的)
-        String msg1 = "this is a non-persistent message";
-        channel.basicPublish(exchangeName, routingKey, null, msg1.getBytes(StandardCharsets.UTF_8));
+        // 5. 消费消息
+        channel.basicConsume(queueName,new DefaultConsumer(channel){
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                String exchange = envelope.getExchange();
+                String routingKey1 = envelope.getRoutingKey();
+                long deliveryTag = envelope.getDeliveryTag();
+                System.out.println(consumerTag);
+                String msg  = new String(body);
+                super.handleDelivery(consumerTag, envelope, properties, body);
+            }
+        });
 
-        String msg2 = "this is a persistent message";
-        channel.basicPublish(exchangeName, routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, msg2.getBytes(StandardCharsets.UTF_8));
-
-        try {
-            TimeUnit.SECONDS.sleep(60);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         channel.close();
         connection.close();
     }
