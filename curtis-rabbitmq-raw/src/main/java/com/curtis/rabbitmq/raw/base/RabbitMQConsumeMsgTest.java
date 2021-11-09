@@ -60,10 +60,8 @@ public class RabbitMQConsumeMsgTest {
 
         // 4.1 创建非自动删除、持久化的类型为直连的交换机，MQ重启交换器不会丢失
         channel.exchangeDeclare(exchangeName, BuiltinExchangeType.DIRECT, true);
-
         // 4.2 声明持久化、非自动删除、排他的队列
         channel.queueDeclare(queueName, true, false, false, null);
-
         // 4.3 使用路由键绑定交换机和队列
         channel.queueBind(queueName, exchangeName, routingKey);
 
@@ -74,23 +72,24 @@ public class RabbitMQConsumeMsgTest {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 long deliveryTag = envelope.getDeliveryTag();
-                LOGGER.info("deliveryTag -> {}", deliveryTag);
-
-                String msg = new String(body, StandardCharsets.UTF_8);
-                LOGGER.info("consume msg -> {}", msg);
+                LOGGER.info("begin consume msg, The deliveryTag is -> {}", deliveryTag);
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(11);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                String msg = new String(body, StandardCharsets.UTF_8);
+                LOGGER.info("consume msg -> {}", msg);
+                LOGGER.info("complete consume msg, The deliveryTag is -> {}", envelope.getDeliveryTag());
                 // 手动应答
+                // 手动应答模式下，如果不手动应答则RabbitMQ收不到消费者确认信号，则当消费者断开连接时，RabbitMQ会将消息重新放入队列中
                 channel.basicAck(deliveryTag, false);
             }
         });
 
         LOGGER.info("The program is about to complete");
         try {
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(60);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -99,7 +98,9 @@ public class RabbitMQConsumeMsgTest {
     }
 
     /**
-     * 使用自动应答、服务器生成消费标签的方式来启动非本地、非独占的消费者
+     * 使用服务器生成消费标签的方式来启动非本地、非独占的消费者(自动应答/非自动应答)
+     * 这里以自动应答来演示
+     *
      * @throws IOException
      * @throws TimeoutException
      */
@@ -135,10 +136,8 @@ public class RabbitMQConsumeMsgTest {
 
         // 4.1 创建非自动删除、持久化的类型为直连的交换机，MQ重启交换器不会丢失
         channel.exchangeDeclare(exchangeName, BuiltinExchangeType.DIRECT, true);
-
         // 4.2 声明持久化、非自动删除、排他的队列
         channel.queueDeclare(queueName, true, false, false, null);
-
         // 4.3 使用路由键绑定交换机和队列
         channel.queueBind(queueName, exchangeName, routingKey);
 
@@ -148,21 +147,21 @@ public class RabbitMQConsumeMsgTest {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 long deliveryTag = envelope.getDeliveryTag();
-                LOGGER.info("deliveryTag -> {}", deliveryTag);
-
-                String msg = new String(body, StandardCharsets.UTF_8);
-                LOGGER.info("consume msg -> {}", msg);
+                LOGGER.info("begin consume msg, The deliveryTag is -> {}", deliveryTag);
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(11);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                String msg = new String(body, StandardCharsets.UTF_8);
+                LOGGER.info("consume msg -> {}", msg);
+                LOGGER.info("complete consume msg, The deliveryTag is -> {}", envelope.getDeliveryTag());
             }
         });
 
         LOGGER.info("The program is about to complete");
         try {
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(60);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -216,21 +215,24 @@ public class RabbitMQConsumeMsgTest {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 long deliveryTag = envelope.getDeliveryTag();
-                LOGGER.info("deliveryTag -> {}", deliveryTag);
-
-                String msg = new String(body, StandardCharsets.UTF_8);
-                LOGGER.info("consume msg -> {}", msg);
+                LOGGER.info("begin consume msg, The deliveryTag is -> {}", deliveryTag);
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(11);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                String msg = new String(body, StandardCharsets.UTF_8);
+                LOGGER.info("consume msg -> {}", msg);
+                LOGGER.info("complete consume msg, The deliveryTag is -> {}", envelope.getDeliveryTag());
+                // 手动应答
+                // 手动应答模式下，如果不手动应答则RabbitMQ收不到消费者确认信号，则当消费者断开连接时，RabbitMQ会将消息重新放入队列中
+                // channel.basicAck(deliveryTag, false);
             }
         });
 
         LOGGER.info("The program is about to complete");
         try {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(60);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

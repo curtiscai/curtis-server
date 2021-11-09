@@ -129,7 +129,7 @@ public class RabbitMQProduceMsgTest {
 
         // 5. 发送消息
         // 5.1 发送不持久化的消息(默认消息是不持久化的)
-        for (int i = 1; i <= 10000; i++) {
+        for (int i = 1; i <= 1000; i++) {
             String msg = "this is a non-persistent message of " + i;
             channel.basicPublish(exchangeName, routingKey, null, msg.getBytes(StandardCharsets.UTF_8));
         }
